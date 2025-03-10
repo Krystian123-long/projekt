@@ -1,0 +1,38 @@
+# Logs and Temporary Files
+*.log
+logs/
+tmp/
+debug.log
+# OS-specific files
+.DS_Store
+Thumbs.db
+# IDE and editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+# Build files
+dist/
+out/
+.cache/
+.next/
+.vercel/
+.netlify/
+coverage/
+# PHP
+vendor/
+composer.lock
+# Laravel / Symfony / Other frameworks
+storage/
+bootstrap/cache/
+.env
+.env.*.local
+.phpunit.result.cache
