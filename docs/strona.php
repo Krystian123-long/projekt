@@ -53,10 +53,10 @@ unset($_SESSION['komunikat']);
     <title>Bank PHP</title>
 </head>
 <body>
-    <h2>Prosty system bankowy</h2>
+    <h2>Konto bankowe</h2>
     <p>Aktualne saldo: <strong><?php echo $_SESSION['saldo']; ?> PLN</strong></p>
     <form method="post">
-        <label>Kwota: <input type="number" name="kwota" required></label>
+        <label>Kwota: <input type="text" name="kwota" required></label>
         <button type="submit" name="wplata">Wpłata</button>
         <button type="submit" name="wyplata">Wypłata</button>
     </form>
