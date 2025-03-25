@@ -35,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         {
             wyplata($kwota);
         }
-    } else 
+    } 
+    else 
     {
         $_SESSION['komunikat'] = "Podaj poprawną kwotę!";
     }
@@ -51,14 +52,95 @@ unset($_SESSION['komunikat']);
 <head>
     <meta charset="UTF-8">
     <title>Bank PHP</title>
+    <style>
+        body 
+        {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container 
+        {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px black;
+            width: 300px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        h2 
+        {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form 
+        {
+            margin-bottom: 20px;
+        }
+        label 
+        {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        input[type="text"] 
+        {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box; 
+        }
+        button 
+        {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button:hover 
+        {
+            background-color: green;
+        }
+        p 
+        {
+            font-size: 14px;
+            color: red;
+            margin-top: 10px;
+        }
+        .saldo 
+        {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h2>Konto bankowe</h2>
-    <p>Aktualne saldo: <strong><?php echo $_SESSION['saldo']; ?> PLN</strong></p>
-    <form method="post">
-        <label>Kwota: <input type="text" name="kwota" required></label>
-        <button type="submit" name="wplata">Wpłata</button>
-        <button type="submit" name="wyplata">Wypłata</button>
-    </form>
-    <p><?php echo $komunikat; ?></p>
+    <div class="container">
+        <h2>Konto bankowe</h2>
+        <p>Aktualne saldo: <span class="saldo"><?php echo $_SESSION['saldo']; ?> PLN</span></p>
+        <form method="post">
+            <label>Kwota:</label>
+            <input type="text" name="kwota" required>
+            <button type="submit" name="wplata">Wpłata</button>
+            <button type="submit" name="wyplata">Wypłata</button>
+        </form>
+        <p><?php echo $komunikat; ?></p>
+    </div>
 </body>
+</html>
