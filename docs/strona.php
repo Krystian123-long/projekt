@@ -46,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 $komunikat = isset($_SESSION['komunikat']) ? $_SESSION['komunikat'] : "";
 unset($_SESSION['komunikat']);
 ?>
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -55,7 +54,7 @@ unset($_SESSION['komunikat']);
     <style>
         body 
         {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background-color: white;
             margin: 0;
             padding: 0;
@@ -76,7 +75,7 @@ unset($_SESSION['komunikat']);
         }
         h2 
         {
-            color: #333;
+            color: black;
             margin-bottom: 20px;
         }
         form 
@@ -88,7 +87,7 @@ unset($_SESSION['komunikat']);
             display: block;
             margin-bottom: 10px;
             font-size: 14px;
-            color: #555;
+            color: black;
         }
         input[type="text"] 
         {
@@ -111,11 +110,7 @@ unset($_SESSION['komunikat']);
             width: 100%;
             font-size: 16px;
             margin-bottom: 10px;
-        }
-        button:hover 
-        {
-            background-color: green;
-        }
+        }      
         p 
         {
             font-size: 14px;
@@ -126,7 +121,7 @@ unset($_SESSION['komunikat']);
         {
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: black;
         }
     </style>
 </head>
