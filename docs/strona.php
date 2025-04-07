@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION['saldo'])) 
 {
-    $_SESSION['saldo'] = 1000; 
+    $_SESSION['saldo'] = 1000;
 }
 function wplata($kwota) 
 {
@@ -26,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if (isset($_POST['kwota']) && is_numeric($_POST['kwota']) && $_POST['kwota'] > 0) 
     {
         $kwota = (int)$_POST['kwota'];
-
         if (isset($_POST['wplata'])) 
         {
             wplata($kwota);
@@ -50,92 +49,30 @@ unset($_SESSION['komunikat']);
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Bank PHP</title>
-    <style>
-        body 
-        {
-            font-family: Arial;
-            background-color: white;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container 
-        {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px black;
-            width: 300px;
-            text-align: center;
-            margin: 0 auto;
-        }
-        h2 
-        {
-            color: black;
-            margin-bottom: 20px;
-        }
-        form 
-        {
-            margin-bottom: 20px;
-        }
-        label 
-        {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: black;
-        }
-        input[type="text"] 
-        {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box; 
-        }
-        button 
-        {
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }      
-        p 
-        {
-            font-size: 14px;
-            color: red;
-            margin-top: 10px;
-        }
-        .saldo 
-        {
-            font-size: 18px;
-            font-weight: bold;
-            color: black;
-        }
-    </style>
+    <title>Konto bankowe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h2>Konto bankowe</h2>
-        <p>Aktualne saldo: <span class="saldo"><?php echo $_SESSION['saldo']; ?> PLN</span></p>
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+<div class="card shadow-lg" style="width: 22rem;">
+    <div class="card-body text-center">
+        <h3 class="card-title mb-3">💰 Konto bankowe</h3>
+        <p class="card-text fw-bold">Saldo: <span class="text-primary"><?php echo $_SESSION['saldo']; ?> PLN</span></p>
+        <?php if ($komunikat): ?>
+            <div class="alert alert-info" role="alert">
+                <?php echo $komunikat; ?>
+            </div>
+        <?php endif; ?>
         <form method="post">
-            <label>Kwota:</label>
-            <input type="text" name="kwota" required>
-            <button type="submit" name="wplata">Wpłata</button>
-            <button type="submit" name="wyplata">Wypłata</button>
+            <div class="mb-3 text-start">
+                <label for="kwota" class="form-label">Kwota:</label>
+                <input type="text" name="kwota" id="kwota" class="form-control" required>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" name="wplata" class="btn btn-success">Wpłata</button>
+                <button type="submit" name="wyplata" class="btn btn-danger">Wypłata</button>
+            </div>
         </form>
-        <p><?php echo $komunikat; ?></p>
     </div>
+</div>
 </body>
 </html>
