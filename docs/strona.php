@@ -6,26 +6,29 @@ if (!isset($_SESSION['saldo']))
 }
 function wplata($kwota) 
 {
-    $_SESSION['saldo'] += $kwota;
-    $_SESSION['komunikat'] = "Wpłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";
+    $_SESSION['saldo'] += $kwota;    
+    $_SESSION['komunikat'] = "Wpłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";   
+    $_SESSION['last_action'] = 'wplata';
 }
 function wyplata($kwota) 
 {
     if ($kwota > $_SESSION['saldo']) 
     {
         $_SESSION['komunikat'] = "Brak wystarczających środków na koncie!";
+        $_SESSION['last_action'] = 'error';
     } 
     else 
     {
-        $_SESSION['saldo'] -= $kwota;
-        $_SESSION['komunikat'] = "Wypłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";
+        $_SESSION['saldo'] -= $kwota;        
+        $_SESSION['komunikat'] = "Wypłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";        
+        $_SESSION['last_action'] = 'wyplata';
     }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {
     if (isset($_POST['kwota']) && is_numeric($_POST['kwota']) && $_POST['kwota'] > 0) 
     {
-        $kwota = (int)$_POST['kwota'];
+        $kwota = (int)$_POST['kwota'];       
         if (isset($_POST['wplata'])) 
         {
             wplata($kwota);
@@ -38,20 +41,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     else 
     {
         $_SESSION['komunikat'] = "Podaj poprawną kwotę!";
+        $_SESSION['last_action'] = 'error';
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 $komunikat = isset($_SESSION['komunikat']) ? $_SESSION['komunikat'] : "";
+$last_action = isset($_SESSION['last_action']) ? $_SESSION['last_action'] : "";
 unset($_SESSION['komunikat']);
+unset($_SESSION['last_action']);
 ?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Konto bankowe</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
+    <title>Konto bankowe</title>    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>   
+   <style>
         body 
         {
             background: linear-gradient(135deg, #e0eafc, #cfdef3);
@@ -81,13 +88,30 @@ unset($_SESSION['komunikat']);
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-    </style>
+        .highlight-success 
+        {
+            background-color: #d4edda !important; 
+            transition: background-color 1s ease;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .highlight-danger 
+        {
+            background-color: #f8d7da !important; 
+            transition: background-color 1s ease;
+            border-radius: 5px;
+            padding: 5px;
+        }
+   </style>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
 <div class="card shadow-lg p-3" style="width: 22rem;">
     <div class="card-body text-center">
         <h3 class="card-title mb-3">💰 Konto bankowe</h3>
-        <p class="card-text fw-bold">Saldo: <span class="text-primary"><?php echo $_SESSION['saldo']; ?> PLN</span></p>
+        <p class="card-text fw-bold">
+            Saldo: 
+            <span id="saldo" class="text-primary"><?php echo $_SESSION['saldo']; ?> PLN</span>
+        </p>
         <?php if ($komunikat): ?>
             <div class="alert alert-info" role="alert">
                 <?php echo $komunikat; ?>
@@ -107,32 +131,43 @@ unset($_SESSION['komunikat']);
     </div>
 </div>
 <script>
-    const kwotaInput = document.getElementById('kwota');
-    const form = document.getElementById('bankForm');
-    const preview = document.getElementById('preview');
-    kwotaInput.addEventListener('input', () => 
+$(document).ready(function() 
+{
+    $('#kwota').on('input', function() 
     {
-        let value = kwotaInput.value.trim();
+        let value = $(this).val().trim();
         if (value && !isNaN(value) && Number(value) > 0) 
         {
-            preview.textContent = `Kwota do operacji: ${value} PLN`;
-            preview.style.color = 'green';
+            $('#preview').text(`Kwota do operacji: ${value} PLN`) 
+            .css('color', 'green'); 
         } 
         else 
         {
-            preview.textContent = '';
+            $('#preview').text('');
         }
     });
-    form.addEventListener('submit', (e) => 
+    $('#bankForm').on('submit', function(e) 
     {
-        let value = kwotaInput.value.trim();
+        let value = $('#kwota').val().trim(); 
         if (isNaN(value) || Number(value) <= 0) 
         {
-            e.preventDefault();
+            e.preventDefault(); 
             alert('Podaj poprawną kwotę większą od zera!');
-            kwotaInput.focus();
+            $('#kwota').focus(); 
         }
-    });
+    });    
+    <?php if ($last_action === 'wplata'): ?>
+        $('#saldo').addClass('highlight-success'); 
+        setTimeout(() => {
+            $('#saldo').removeClass('highlight-success'); 
+        }, 1500);
+    <?php elseif ($last_action === 'wyplata'): ?>
+        $('#saldo').addClass('highlight-danger'); 
+        setTimeout(() => {
+            $('#saldo').removeClass('highlight-danger'); 
+        }, 1500);
+    <?php endif; ?>
+});
 </script>
 </body>
 </html>
