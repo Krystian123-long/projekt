@@ -144,7 +144,6 @@ unset($_SESSION['last_action']);
             text-align: center;
             color: black; 
         }
-        /* Formularz i komunikat w jednej linii */
         form 
         {
             display: flex;
@@ -172,7 +171,7 @@ unset($_SESSION['last_action']);
         }
         .komunikat 
         {
-            min-height: 1.6rem; /* rezerwujemy miejsce na tekst komunikatu */
+            min-height: 1.6rem; 
             font-size: 0.9rem;
             color: #555;
             text-align: center;
@@ -199,12 +198,10 @@ unset($_SESSION['last_action']);
         {
             filter: brightness(1.1);
         }
-        /* Kolory przycisków */
         .btn-success { background-color: #198754; color: white; border: none; }
         .btn-danger { background-color: #dc3545; color: white; border: none; }
         .btn-primary { background-color: #0d6efd; color: white; border: none; }
         .btn-info { background-color: #0dcaf0; color: white; border: none; }
-        /* Animacje dla tytułów */
         .pulse-yellow 
         {
             animation: pulse-yellow 2s infinite;
@@ -225,7 +222,6 @@ unset($_SESSION['last_action']);
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        /* Kolory komunikatów */
         .komunikat.error 
         {
             color: #dc3545;
@@ -234,7 +230,6 @@ unset($_SESSION['last_action']);
         {
             color: #198754;
         }
-        /* Podgląd kwoty */
         .podglad {
             color: #888888;
             font-size: 0.9rem;
@@ -257,26 +252,25 @@ unset($_SESSION['last_action']);
 </head>
 <body>
 <div class="konto-container">
-    <!-- Konto główne -->
     <div class="card">
     <h3 class="<?php echo ($last_action === 'wplata' || $last_action === 'wyplata') ? 'pulse-yellow' : ''; ?>">💰 Konto główne</h3>
-    <p class="saldo"><?php echo $_SESSION['saldo']; ?> PLN</p> <!-- bez text-primary, kolor czarny -->
+    <p class="saldo"><?php echo $_SESSION['saldo']; ?> PLN</p> 
     <div class="komunikat <?php 
     if ($last_action === 'error' || $last_action === 'na_oszczednosci') 
     {
-        echo 'error'; // czerwony dla błędów i przelewów na oszczędności (z konta głównego)
+        echo 'error'; 
     } 
     elseif ($last_action === 'wplata') 
     {
-        echo 'success'; // zielony dla wpłaty
+        echo 'success'; 
     } 
     elseif ($last_action === 'wyplata') 
     {
-        echo 'error';   // czerwony dla wypłaty
+        echo 'error';  
     } 
     elseif ($last_action === 'na_glowne') 
     {
-        echo 'success'; // zielony dla przelewu z oszczędności na konto główne
+        echo 'success'; 
     } 
     else 
     {
@@ -306,7 +300,6 @@ unset($_SESSION['last_action']);
     </div>
 </form>
 </div>
-<!-- Konto oszczędnościowe -->
 <div class="card">
 <h3 class="<?php echo ($last_action === 'na_oszczednosci' || $last_action === 'na_glowne') ? 'pulse-purple' : ''; ?>">🏦 Konto oszczędnościowe</h3>
 <p class="saldo"><?php echo $_SESSION['oszczednosci']; ?> PLN</p>
@@ -382,12 +375,9 @@ unset($_SESSION['last_action']);
 <script>
   document.addEventListener('DOMContentLoaded', function() 
   {
-    // Konto główne - saldo
     const saldoGlownyEl = document.querySelector('.konto-container .card:first-child .saldo');
-    // Konto oszczędnościowe - saldo
     const saldoOszczednosciEl = document.querySelector('.konto-container .card:last-child .saldo');
     const lastAction = '<?php echo $last_action; ?>';
-    // Funkcja do podświetlenia elementu
     function podswietl(el, bgColor, textColor) 
     {
       el.style.backgroundColor = bgColor;
@@ -403,23 +393,21 @@ unset($_SESSION['last_action']);
         el.style.borderRadius = '';
       }, 3000);
     }
-    // Konto główne
     if (lastAction === 'wplata') 
     {
-      podswietl(saldoGlownyEl, '#d4edda', '#155724'); // zieleń
+      podswietl(saldoGlownyEl, '#d4edda', '#155724'); 
     } 
     else if (lastAction === 'wyplata') 
     {
-      podswietl(saldoGlownyEl, '#f8d7da', '#721c24'); // czerwień
-    }
-    // Konto oszczędnościowe
+      podswietl(saldoGlownyEl, '#f8d7da', '#721c24'); 
+    }    
     if (lastAction === 'na_oszczednosci') 
     {
-      podswietl(saldoOszczednosciEl, '#d4edda', '#155724'); // zieleń przy przelewie na oszczędności
+      podswietl(saldoOszczednosciEl, '#d4edda', '#155724'); 
     } 
     else if (lastAction === 'na_glowne') 
     {
-      podswietl(saldoOszczednosciEl, '#f8d7da', '#721c24'); // czerwień przy przelewie z oszczędności
+      podswietl(saldoOszczednosciEl, '#f8d7da', '#721c24'); 
     }
   });
 </script>
