@@ -1,63 +1,80 @@
 <?php
 session_start();
-if (!isset($_SESSION['saldo'])) 
+interface AccountInterface
 {
-    $_SESSION['saldo'] = 1000;
+    public function deposit(int $amount): void;
+    public function withdraw(int $amount): void;
+    public function transferTo(Account $target, int $amount): void;
+    public function getBalance(): int;
 }
-if (!isset($_SESSION['oszczednosci'])) 
+class Account implements AccountInterface
 {
-    $_SESSION['oszczednosci'] = 500;
-}
-function wplata($kwota)
-{
-    $_SESSION['saldo'] += $kwota;
-    $_SESSION['komunikat'] = "Wpłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";
-    $_SESSION['last_action'] = 'wplata';
-}
-function wyplata($kwota)
-{
-    if ($kwota > $_SESSION['saldo']) 
+    private string $sessionKey;
+    private string $cookieKey;
+    public function __construct(string $sessionKey, string $cookieKey, int $initial = 0)
     {
-        $_SESSION['komunikat'] = "Brak wystarczających środków na koncie!";
-        $_SESSION['last_action'] = 'error';
-    } 
-    else 
+        $this->sessionKey = $sessionKey;
+        $this->cookieKey = $cookieKey;
+        if (!isset($_SESSION[$this->sessionKey])) 
+        {
+            $_SESSION[$this->sessionKey] = $initial;
+            $this->updateCookie();
+        } 
+        elseif (!isset($_COOKIE[$this->cookieKey])) 
+        {
+            $this->updateCookie();
+        }
+    }
+    private function updateCookie(): void
     {
-        $_SESSION['saldo'] -= $kwota;
-        $_SESSION['komunikat'] = "Wypłacono $kwota PLN. Nowe saldo: {$_SESSION['saldo']} PLN.";
-        $_SESSION['last_action'] = 'wyplata';
+        setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+    }
+    public function deposit(int $amount): void
+    {
+        $_SESSION[$this->sessionKey] += $amount;
+        setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+        $_SESSION['komunikat'] = "Wpłacono $amount PLN. Nowe saldo: " . $this->getBalance() . " PLN.";
+        $_SESSION['last_action'] = 'wplata';
+    }
+    public function withdraw(int $amount): void
+    {
+        if ($amount > $this->getBalance()) 
+        {
+            $_SESSION['komunikat'] = "Brak wystarczających środków na koncie!";
+            $_SESSION['last_action'] = 'error';
+        } 
+        else 
+        {
+            $_SESSION[$this->sessionKey] -= $amount;
+            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+            $_SESSION['komunikat'] = "Wypłacono $amount PLN. Nowe saldo: " . $this->getBalance() . " PLN.";
+            $_SESSION['last_action'] = 'wyplata';
+        }
+    }
+    public function transferTo(Account $target, int $amount): void
+    {
+        if ($amount > $this->getBalance()) 
+        {
+            $_SESSION['komunikat'] = "Nie masz wystarczających środków na transfer.";
+            $_SESSION['last_action'] = 'error';
+        } 
+        else 
+        {
+            $_SESSION[$this->sessionKey] -= $amount;            
+            $_SESSION[$target->sessionKey] += $amount;
+            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+            $_SESSION['komunikat'] = "Przelano $amount PLN z {$this->sessionKey} na {$target->sessionKey}.";
+            $_SESSION['last_action'] = $this->sessionKey === 'saldo' ? 'na_oszczednosci' : 'na_glowne';
+        }
+    }
+    public function getBalance(): int
+    {
+        return $_SESSION[$this->sessionKey];
     }
 }
-function przeslijNaOszczednosci($kwota)
-{
-    if ($kwota > $_SESSION['saldo']) 
-    {
-        $_SESSION['komunikat'] = "Nie masz tylu środków, by przelać na konto oszczędnościowe.";
-        $_SESSION['last_action'] = 'error';
-    } 
-    else 
-    {
-        $_SESSION['saldo'] -= $kwota;
-        $_SESSION['oszczednosci'] += $kwota;
-        $_SESSION['komunikat'] = "Przelano $kwota PLN na konto oszczędnościowe.";
-        $_SESSION['last_action'] = 'na_oszczednosci';
-    }
-}
-function przeslijNaGlowne($kwota)
-{
-    if ($kwota > $_SESSION['oszczednosci']) 
-    {
-        $_SESSION['komunikat'] = "Nie masz tylu środków, by przelać na konto główne.";
-        $_SESSION['last_action'] = 'error';
-    } 
-    else 
-    {
-        $_SESSION['oszczednosci'] -= $kwota;
-        $_SESSION['saldo'] += $kwota;
-        $_SESSION['komunikat'] = "Przelano $kwota PLN na konto główne.";
-        $_SESSION['last_action'] = 'na_glowne';
-    }
-}
+$kontoGlowne = new Account('saldo', 'cookie_saldo', 1000);
+$kontoOszczednosci = new Account('oszczednosci', 'cookie_oszczednosci', 500);
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {
     if (isset($_POST['kwota']) && is_numeric($_POST['kwota']) && $_POST['kwota'] > 0) 
@@ -65,19 +82,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $kwota = (int)$_POST['kwota'];
         if (isset($_POST['wplata'])) 
         {
-            wplata($kwota);
+            $kontoGlowne->deposit($kwota);
         } 
         elseif (isset($_POST['wyplata'])) 
         {
-            wyplata($kwota);
+            $kontoGlowne->withdraw($kwota);
         } 
         elseif (isset($_POST['przelej_na_oszczednosci'])) 
         {
-            przeslijNaOszczednosci($kwota);
+            $kontoGlowne->transferTo($kontoOszczednosci, $kwota);
         } 
         elseif (isset($_POST['przelej_na_glowne'])) 
         {
-            przeslijNaGlowne($kwota);
+            $kontoOszczednosci->transferTo($kontoGlowne, $kwota);
         }
     } 
     else 
@@ -101,160 +118,13 @@ unset($_SESSION['last_action']);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body 
-        {
-            background: linear-gradient(135deg, #e0eafc, #cfdef3);
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .konto-container 
-        {
-            display: flex;
-            gap: 20px;
-            max-width: 1000px;
-            width: 100%;
-        }
-        .card 
-        {
-            flex: 1;
-            border-radius: 20px;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 15px rgb(0 0 0 / 0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 400px; 
-        }
-        h3 
-        {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .saldo 
-        {
-            font-weight: 700;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-align: center;
-            color: black; 
-        }
-        form 
-        {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .input-row 
-        {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .input-row label 
-        {
-            flex-shrink: 0;
-            width: 60px;
-        }
-        .input-row input[type="text"] 
-        {
-            flex-grow: 1;
-            border-radius: 10px;
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            font-size: 1rem;
-        }
-        .komunikat 
-        {
-            min-height: 1.6rem; 
-            font-size: 0.9rem;
-            color: #555;
-            text-align: center;
-            margin-bottom: 10px;
-            height: 24px;
-        }
-        .btn-group 
-        {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        button.btn 
-        {
-            flex: 1 1 45%;
-            border-radius: 12px;
-            font-weight: 600;
-            padding: 10px 0;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-        button.btn:hover 
-        {
-            filter: brightness(1.1);
-        }
-        .btn-success { background-color: #198754; color: white; border: none; }
-        .btn-danger { background-color: #dc3545; color: white; border: none; }
-        .btn-primary { background-color: #0d6efd; color: white; border: none; }
-        .btn-info { background-color: #0dcaf0; color: white; border: none; }
-        .pulse-yellow 
-        {
-            animation: pulse-yellow 2s infinite;
-            color: #ffc107;
-        }
-        @keyframes pulse-yellow 
-        {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .pulse-purple 
-        {
-            animation: pulse-purple 2s infinite;
-            color: #6f42c1;
-        }
-        @keyframes pulse-purple 
-        {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .komunikat.error 
-        {
-            color: #dc3545;
-        }
-        .komunikat.success 
-        {
-            color: #198754;
-        }
-        .podglad {
-            color: #888888;
-            font-size: 0.9rem;
-            margin-top: 4px;
-            min-height: 18px;
-            font-style: italic;
-        }
-        @media (max-width: 768px) 
-        {
-            .konto-container 
-            {
-                flex-direction: column;
-            }
-            button.btn 
-            {
-                flex: 1 1 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">    
 </head>
 <body>
 <div class="konto-container">
     <div class="card">
     <h3 class="<?php echo ($last_action === 'wplata' || $last_action === 'wyplata') ? 'pulse-yellow' : ''; ?>">💰 Konto główne</h3>
-    <p class="saldo"><?php echo $_SESSION['saldo']; ?> PLN</p> 
+    <p class="saldo"><?php echo $kontoGlowne->getBalance(); ?> PLN</p> 
     <div class="komunikat <?php 
     if ($last_action === 'error' || $last_action === 'na_oszczednosci') 
     {
@@ -302,7 +172,7 @@ unset($_SESSION['last_action']);
 </div>
 <div class="card">
 <h3 class="<?php echo ($last_action === 'na_oszczednosci' || $last_action === 'na_glowne') ? 'pulse-purple' : ''; ?>">🏦 Konto oszczędnościowe</h3>
-<p class="saldo"><?php echo $_SESSION['oszczednosci']; ?> PLN</p>
+<p class="saldo"><?php echo $kontoOszczednosci->getBalance(); ?> PLN</p>
 <div class="komunikat <?php
     if ($last_action === 'error') 
     {
@@ -412,7 +282,7 @@ unset($_SESSION['last_action']);
   });
 </script>
 </body> 
-</html>     
+</html>                                                                                                                                                                                                                                      
 
 
 

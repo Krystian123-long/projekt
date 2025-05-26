@@ -1,5 +1,5 @@
-.pulse-effect-yellow 
-{
+  .pulse-effect-yellow 
+  {
     animation: pulse-yellow 2s infinite;
     color: #ffcc00;
   }
