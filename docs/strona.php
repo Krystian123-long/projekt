@@ -1,80 +1,83 @@
 <?php
 session_start();
-interface AccountInterface
-{
-    public function deposit(int $amount): void;
-    public function withdraw(int $amount): void;
-    public function transferTo(Account $target, int $amount): void;
-    public function getBalance(): int;
-}
+require_once 'db.php';
+require_once 'AccountInterface.php';
 class Account implements AccountInterface
 {
-    private string $sessionKey;
-    private string $cookieKey;
-    public function __construct(string $sessionKey, string $cookieKey, int $initial = 0)
+    private PDO $pdo;
+    private string $name;
+    public function __construct(PDO $pdo, string $name)
     {
-        $this->sessionKey = $sessionKey;
-        $this->cookieKey = $cookieKey;
-        if (!isset($_SESSION[$this->sessionKey])) 
-        {
-            $_SESSION[$this->sessionKey] = $initial;
-            $this->updateCookie();
-        } 
-        elseif (!isset($_COOKIE[$this->cookieKey])) 
-        {
-            $this->updateCookie();
-        }
+        $this->pdo = $pdo;
+        $this->name = $name;
+        $this->initialize();
     }
-    private function updateCookie(): void
+    private function initialize(): void
     {
-        setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+        $stmt = $this->pdo->prepare("SELECT saldo FROM konta WHERE nazwa = ?");
+        $stmt->execute([$this->name]);
+        if (!$stmt->fetch()) {
+            $insert = $this->pdo->prepare("INSERT INTO konta (nazwa, saldo) VALUES (?, ?)");
+            $insert->execute([$this->name, 0]);
+        }
     }
     public function deposit(int $amount): void
     {
-        $_SESSION[$this->sessionKey] += $amount;
-        setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+        $stmt = $this->pdo->prepare("UPDATE konta SET saldo = saldo + ? WHERE nazwa = ?");
+        $stmt->execute([$amount, $this->name]);
         $_SESSION['komunikat'] = "Wpłacono $amount PLN. Nowe saldo: " . $this->getBalance() . " PLN.";
         $_SESSION['last_action'] = 'wplata';
     }
     public function withdraw(int $amount): void
     {
-        if ($amount > $this->getBalance()) 
-        {
+        $saldo = $this->getBalance();
+        if ($amount > $saldo) {
             $_SESSION['komunikat'] = "Brak wystarczających środków na koncie!";
             $_SESSION['last_action'] = 'error';
         } 
         else 
         {
-            $_SESSION[$this->sessionKey] -= $amount;
-            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
+            $stmt = $this->pdo->prepare("UPDATE konta SET saldo = saldo - ? WHERE nazwa = ?");
+            $stmt->execute([$amount, $this->name]);
             $_SESSION['komunikat'] = "Wypłacono $amount PLN. Nowe saldo: " . $this->getBalance() . " PLN.";
             $_SESSION['last_action'] = 'wyplata';
         }
     }
     public function transferTo(Account $target, int $amount): void
     {
-        if ($amount > $this->getBalance()) 
-        {
+        $saldo = $this->getBalance();
+        if ($amount > $saldo) {
             $_SESSION['komunikat'] = "Nie masz wystarczających środków na transfer.";
             $_SESSION['last_action'] = 'error';
         } 
         else 
         {
-            $_SESSION[$this->sessionKey] -= $amount;            
-            $_SESSION[$target->sessionKey] += $amount;
-            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
-            setcookie($this->cookieKey, $_SESSION[$this->sessionKey], time() + 86400, "/");
-            $_SESSION['komunikat'] = "Przelano $amount PLN z {$this->sessionKey} na {$target->sessionKey}.";
-            $_SESSION['last_action'] = $this->sessionKey === 'saldo' ? 'na_oszczednosci' : 'na_glowne';
+            $this->pdo->beginTransaction();
+            try 
+            {
+                $this->withdraw($amount);
+                $target->deposit($amount);
+                $this->pdo->commit();
+                $_SESSION['komunikat'] = "Przelano $amount PLN z {$this->name} na {$target->name}.";
+                $_SESSION['last_action'] = $this->name === 'saldo' ? 'na_oszczednosci' : 'na_glowne';
+            } 
+            catch (Exception $e) 
+            {
+                $this->pdo->rollBack();
+                $_SESSION['komunikat'] = "Błąd podczas transferu.";
+                $_SESSION['last_action'] = 'error';
+            }
         }
     }
     public function getBalance(): int
     {
-        return $_SESSION[$this->sessionKey];
+        $stmt = $this->pdo->prepare("SELECT saldo FROM konta WHERE nazwa = ?");
+        $stmt->execute([$this->name]);
+        return (int)$stmt->fetchColumn();
     }
 }
-$kontoGlowne = new Account('saldo', 'cookie_saldo', 1000);
-$kontoOszczednosci = new Account('oszczednosci', 'cookie_oszczednosci', 500);
+$kontoGlowne = new Account($pdo, 'saldo');
+$kontoOszczednosci = new Account($pdo, 'oszczednosci');
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {
     if (isset($_POST['kwota']) && is_numeric($_POST['kwota']) && $_POST['kwota'] > 0) 
