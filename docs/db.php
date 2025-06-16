@@ -6,7 +6,6 @@ $dbname = "phptestdb";
 try 
 {
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Ustawienie trybu zgłaszania błędów – rzucanie wyjątków 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } 
 catch(PDOException $e) 

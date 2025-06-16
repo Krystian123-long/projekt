@@ -1,6 +1,6 @@
 body 
     {
-        background: linear-gradient(135deg, #e0eafc, #cfdef3); /* Jasne tło w postaci gradientu pod kątem 135 stopni */
+        background: linear-gradient(135deg, #e0eafc, #cfdef3); 
         font-family: Arial, sans-serif;
         min-height: 100vh;
         display: flex;
@@ -17,7 +17,7 @@ body
     }
 .card 
     {
-        flex: 1; /* Karty dzielą przestrzeń po równo */
+        flex: 1; 
         border-radius: 20px;
         padding: 20px;
         background: white;
@@ -34,7 +34,7 @@ h3
     }
 .saldo 
     {
-        font-weight: 700;  /* Grubsza czcionka */
+        font-weight: 700;  
         font-size: 1.5rem;
         margin-bottom: 20px;
         text-align: center;
@@ -54,7 +54,7 @@ form
     }
 .input-row label 
     {
-        flex-shrink: 0; /* Etykieta nie zmniejsza się przy braku miejsca */
+        flex-shrink: 0; 
         width: 60px;
     }
 .input-row input[type="text"] 
@@ -76,7 +76,7 @@ form
     }
 .btn-group 
     {
-        display: flex; /* Grupa przycisków w jednej linii */
+        display: flex; 
         gap: 10px;
         flex-wrap: wrap;
         justify-content: center;
@@ -92,7 +92,7 @@ button.btn
     }
 button.btn:hover 
     {
-        filter: brightness(1.1); /* Lekko rozjaśnia przycisk po najechaniu */
+        filter: brightness(1.1); 
     }
 .btn-success 
     { 
@@ -133,7 +133,6 @@ button.btn:hover
         animation: pulse-purple 2s infinite;
         color: #6f42c1;
     }
-/* Fioletowa animacja migania */
 @keyframes pulse-purple 
     {
         0%, 100% { opacity: 1; }
@@ -155,7 +154,6 @@ button.btn:hover
         min-height: 18px;
         font-style: italic;
     }
-/* Styl responsywny dla małych ekranów */
 @media (max-width: 768px) 
     {
         .konto-container 

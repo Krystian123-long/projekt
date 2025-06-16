@@ -14,7 +14,6 @@ class Account implements AccountInterface
     {
         $this->pdo = $pdo;
         $this->name = $name;
-        //Sprawdza, czy konto istnieje – jeśli nie, tworzy je z saldem 0
         $this->initialize();
     }
     private function initialize(): void
@@ -31,7 +30,6 @@ class Account implements AccountInterface
     {
         $stmt = $this->pdo->prepare("UPDATE konta SET saldo = saldo + ? WHERE nazwa = ?");
         $stmt->execute([$amount, $this->name]);
-        //Komunikat wyświetlany po operacji
         $_SESSION['komunikat'] = "Wpłacono $amount PLN. Nowe saldo: " . $this->getBalance() . " PLN.";
         $_SESSION['last_action'] = 'wplata';
     }
@@ -54,13 +52,13 @@ class Account implements AccountInterface
     public function transferTo(Account $target, int $amount): void
     {
         $saldo = $this->getBalance();
-        if ($amount > $saldo) {
+        if ($amount > $saldo) 
+        {
             $_SESSION['komunikat'] = "Nie masz wystarczających środków na transfer.";
             $_SESSION['last_action'] = 'error';
         } 
         else 
         {
-            //Początek transakcji – jeśli coś się nie uda, cofnie wszystko
             $this->pdo->beginTransaction();
             try 
             {
@@ -77,8 +75,7 @@ class Account implements AccountInterface
                 $_SESSION['last_action'] = 'error';
             }
         }
-    }
-    // Zwraca bieżące saldo konta 
+    } 
     public function getBalance(): int
     {
         $stmt = $this->pdo->prepare("SELECT saldo FROM konta WHERE nazwa = ?");
@@ -120,10 +117,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 }
 $komunikat = $_SESSION['komunikat'] ?? "";
 $last_action = $_SESSION['last_action'] ?? "";
-// Czyszczenie sesji z komunikatów po odczytaniu
 unset($_SESSION['komunikat']);
 unset($_SESSION['last_action']);
 ?>
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -134,14 +131,14 @@ unset($_SESSION['last_action']);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>   
     <link rel="stylesheet" href="my-app/src/index.css">  
 </head>
-<body>
+
+<body>    
 <div class="konto-container">
     <div class="card">
     <h3 class="<?php echo ($last_action === 'wplata' || $last_action === 'wyplata') ? 'pulse-yellow' : ''; ?>">💰 Konto główne</h3>
     <p class="saldo"><?php echo $kontoGlowne->getBalance(); ?> PLN</p> 
     <div class="komunikat
 <?php 
-    // Komunikat zależny od rodzaju akcji użytkownika, np. błąd, sukces
     if ($last_action === 'error' || $last_action === 'na_oszczednosci') 
     {
         echo 'error'; 
@@ -174,7 +171,7 @@ unset($_SESSION['last_action']);
         }
     ?>
 </div>
-<!-- Formularz dla konta głównego (wpłata / wypłata) -->
+
     <form method="post" id="formGlowny">
         <div class="input-row">
             <label for="kwota_glowna">Kwota:</label>
@@ -186,11 +183,11 @@ unset($_SESSION['last_action']);
         <button type="submit" name="wyplata" class="btn btn-danger">Wypłata</button>
     </div>
 </form>
+
 </div>
 <div class="card">
 <h3 class="<?php echo ($last_action === 'na_oszczednosci' || $last_action === 'na_glowne') ? 'pulse-purple' : ''; ?>">🏦 Konto oszczędnościowe</h3>
 <p class="saldo"><?php echo $kontoOszczednosci->getBalance(); ?> PLN</p>
-<!-- Komunikat w zależności od operacji dotyczącej konta oszczędnościowego -->
 <div class="komunikat <?php
     if ($last_action === 'error') 
     {
@@ -220,7 +217,7 @@ unset($_SESSION['last_action']);
         }
     ?>
 </div>
-<!-- Formularz do przelewów między kontami -->
+
 <form method="post" id="formOszczednosciowy">
     <div class="input-row">
         <label for="kwota_oszczednosci">Kwota:</label>
@@ -234,9 +231,9 @@ unset($_SESSION['last_action']);
 </form>
 </div>
 </div> 
+
 <script> $(document).ready(function() 
 { 
-// Obsługa pola kwoty w koncie głównym – nasłuchiwanie zmian w polu tekstowym
     $('#kwota_glowna').on('input', function() 
     { 
         let val = $(this).val(); 
@@ -253,7 +250,6 @@ unset($_SESSION['last_action']);
     $('#kwota_oszczednosci').on('input', function() 
     { 
         let val = $(this).val(); 
-        // Jeśli pole puste, czyści podgląd
         if (val === '')     
         { 
             $('#podglad_kwota_oszczednosci').text(''); 
@@ -266,10 +262,10 @@ unset($_SESSION['last_action']);
 );
 }); 
 </script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() 
   {
-    // Pobranie elementów z aktualnym saldem konta głównego i oszczędnościowego
     const saldoGlownyEl = document.querySelector('.konto-container .card:first-child .saldo');
     const saldoOszczednosciEl = document.querySelector('.konto-container .card:last-child .saldo');
     const lastAction = '<?php echo $last_action; ?>';
@@ -288,7 +284,6 @@ unset($_SESSION['last_action']);
         el.style.borderRadius = '';
       }, 3000);
     }
-    // Jeśli przelew na oszczędności – podświetl saldo konta oszczędnościowego na zielono
     if (lastAction === 'wplata') 
     {
       podswietl(saldoGlownyEl, '#d4edda', '#155724'); 
