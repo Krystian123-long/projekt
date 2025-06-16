@@ -1,6 +1,6 @@
 body 
     {
-        background: linear-gradient(135deg, #e0eafc, #cfdef3);
+        background: linear-gradient(135deg, #e0eafc, #cfdef3); /* Jasne tło w postaci gradientu pod kątem 135 stopni */
         font-family: Arial, sans-serif;
         min-height: 100vh;
         display: flex;
@@ -17,7 +17,7 @@ body
     }
 .card 
     {
-        flex: 1;
+        flex: 1; /* Karty dzielą przestrzeń po równo */
         border-radius: 20px;
         padding: 20px;
         background: white;
@@ -34,7 +34,7 @@ h3
     }
 .saldo 
     {
-        font-weight: 700;
+        font-weight: 700;  /* Grubsza czcionka */
         font-size: 1.5rem;
         margin-bottom: 20px;
         text-align: center;
@@ -48,13 +48,13 @@ form
     }
 .input-row 
     {
-        display: flex;
+        display: flex; 
         gap: 10px;
         align-items: center;
     }
 .input-row label 
     {
-        flex-shrink: 0;
+        flex-shrink: 0; /* Etykieta nie zmniejsza się przy braku miejsca */
         width: 60px;
     }
 .input-row input[type="text"] 
@@ -76,7 +76,7 @@ form
     }
 .btn-group 
     {
-        display: flex;
+        display: flex; /* Grupa przycisków w jednej linii */
         gap: 10px;
         flex-wrap: wrap;
         justify-content: center;
@@ -88,16 +88,36 @@ button.btn
         font-weight: 600;
         padding: 10px 0;
         font-size: 1rem;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease;    
     }
 button.btn:hover 
     {
-        filter: brightness(1.1);
+        filter: brightness(1.1); /* Lekko rozjaśnia przycisk po najechaniu */
     }
-.btn-success { background-color: #198754; color: white; border: none; }
-.btn-danger { background-color: #dc3545; color: white; border: none; }
-.btn-primary { background-color: #0d6efd; color: white; border: none; }
-.btn-info { background-color: #0dcaf0; color: white; border: none; }
+.btn-success 
+    { 
+        background-color: #198754; 
+        color: white; 
+        border: none; 
+    }
+.btn-danger 
+    { 
+        background-color: #dc3545; 
+        color: white; 
+        border: none; 
+    }
+.btn-primary 
+    { 
+        background-color: #0d6efd; 
+        color: white; 
+        border: none; 
+    }
+.btn-info 
+    { 
+        background-color: #0dcaf0; 
+        color: white; 
+        border: none; 
+    }
 .pulse-yellow 
     {
         animation: pulse-yellow 2s infinite;
@@ -113,6 +133,7 @@ button.btn:hover
         animation: pulse-purple 2s infinite;
         color: #6f42c1;
     }
+/* Fioletowa animacja migania */
 @keyframes pulse-purple 
     {
         0%, 100% { opacity: 1; }
@@ -134,6 +155,7 @@ button.btn:hover
         min-height: 18px;
         font-style: italic;
     }
+/* Styl responsywny dla małych ekranów */
 @media (max-width: 768px) 
     {
         .konto-container 
@@ -145,3 +167,4 @@ button.btn:hover
                 flex: 1 1 100%;
             }
     }
+
