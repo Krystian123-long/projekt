@@ -171,7 +171,6 @@ unset($_SESSION['last_action']);
         }
     ?>
 </div>
-
     <form method="post" id="formGlowny">
         <div class="input-row">
             <label for="kwota_glowna">Kwota:</label>
@@ -183,12 +182,13 @@ unset($_SESSION['last_action']);
         <button type="submit" name="wyplata" class="btn btn-danger">Wypłata</button>
     </div>
 </form>
-
 </div>
+
 <div class="card">
 <h3 class="<?php echo ($last_action === 'na_oszczednosci' || $last_action === 'na_glowne') ? 'pulse-purple' : ''; ?>">🏦 Konto oszczędnościowe</h3>
 <p class="saldo"><?php echo $kontoOszczednosci->getBalance(); ?> PLN</p>
-<div class="komunikat <?php
+<div class="komunikat 
+<?php
     if ($last_action === 'error') 
     {
         echo 'error';
@@ -217,7 +217,6 @@ unset($_SESSION['last_action']);
         }
     ?>
 </div>
-
 <form method="post" id="formOszczednosciowy">
     <div class="input-row">
         <label for="kwota_oszczednosci">Kwota:</label>
@@ -230,7 +229,7 @@ unset($_SESSION['last_action']);
     </div>
 </form>
 </div>
-</div> 
+</div>
 
 <script> $(document).ready(function() 
 { 
