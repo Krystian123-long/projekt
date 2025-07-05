@@ -1,7 +1,26 @@
+$font-main: Arial, sans-serif;
+$bg-gradient: linear-gradient(135deg, #e0eafc, #cfdef3);
+$card-bg: white;
+$card-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+$radius-large: 20px;
+$radius-medium: 12px;
+$radius-small: 10px;
+$color-black: black;
+$color-gray: #888888;
+$color-lightgray: #ced4da;
+$color-muted: #555;
+$color-error: #dc3545;
+$color-success: #198754;
+$color-primary: #0d6efd;
+$color-info: #0dcaf0;
+$color-warning: #ffc107;
+$color-purple: #6f42c1;
+$breakpoint-mobile: 768px;
+
 body 
 {
-  background: linear-gradient(135deg, #e0eafc, #cfdef3);
-  font-family: Arial, sans-serif;
+  background: $bg-gradient;
+  font-family: $font-main;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -14,14 +33,19 @@ body
   gap: 20px;
   max-width: 1000px;
   width: 100%;
+
+  @media (max-width: $breakpoint-mobile) 
+  {
+    flex-direction: column;
+  }
 }
 .card 
 {
   flex: 1;
-  border-radius: 20px;
+  border-radius: $radius-large;
   padding: 20px;
-  background: white;
-  box-shadow: 0 0 15px rgb(0 0 0 / 0.15);
+  background: $card-bg;
+  box-shadow: $card-shadow;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -38,49 +62,60 @@ h3
   font-size: 1.5rem;
   margin-bottom: 20px;
   text-align: center;
-  color: black;
+  color: $color-black;
 }
 form 
 {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-.input-row 
-{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  label 
+
+  .input-row 
   {
-    flex-shrink: 0;
-    width: 60px;
-  }
-  input[type="text"] 
-  {
-    flex-grow: 1;
-    border-radius: 10px;
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    font-size: 1rem;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    label 
+    {
+      flex-shrink: 0;
+      width: 60px;
+    }
+
+    input[type="text"] 
+    {
+      flex-grow: 1;
+      border-radius: $radius-small;
+      padding: 8px 12px;
+      border: 1px solid $color-lightgray;
+      font-size: 1rem;
+    }
   }
 }
 .komunikat 
 {
   min-height: 1.6rem;
+  height: 24px;
   font-size: 0.9rem;
-  color: #555;
+  color: $color-muted;
   text-align: center;
   margin-bottom: 10px;
-  height: 24px;
   &.error 
   {
-    color: #dc3545;
+    color: $color-error;
   }
   &.success 
   {
-    color: #198754;
+    color: $color-success;
   }
+}
+.podglad 
+{
+  color: $color-gray;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  min-height: 18px;
+  font-style: italic;
 }
 .btn-group 
 {
@@ -92,7 +127,7 @@ form
 button.btn 
 {
   flex: 1 1 45%;
-  border-radius: 12px;
+  border-radius: $radius-medium;
   font-weight: 600;
   padding: 10px 0;
   font-size: 1rem;
@@ -101,75 +136,64 @@ button.btn
   {
     filter: brightness(1.1);
   }
-}
-.btn-success 
-{
-  background-color: #198754;
-  color: white;
-  border: none;
-}
-.btn-danger 
-{
-  background-color: #dc3545;
-  color: white;
-  border: none;
-}
-.btn-primary 
-{
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-}
-.btn-info 
-{
-  background-color: #0dcaf0;
-  color: white;
-  border: none;
+  &.btn-success 
+  {
+    background-color: $color-success;
+    color: white;
+    border: none;
+  }
+  &.btn-danger 
+  {
+    background-color: $color-error;
+    color: white;
+    border: none;
+  }
+  &.btn-primary 
+  {
+    background-color: $color-primary;
+    color: white;
+    border: none;
+  }
+  &.btn-info 
+  {
+    background-color: $color-info;
+    color: white;
+    border: none;
+  }
+  @media (max-width: $breakpoint-mobile) 
+  {
+    flex: 1 1 100%;
+  }
 }
 .pulse-yellow 
 {
   animation: pulse-yellow 2s infinite;
-  color: #ffc107;
-}
-@keyframes pulse-yellow
-{
-    0%, 100% {
-    opacity: 1;
-  }
-    50% {
-    opacity: 0.5;
-  }
+  color: $color-warning;
 }
 .pulse-purple 
 {
   animation: pulse-purple 2s infinite;
-  color: #6f42c1;
+  color: $color-purple;
 }
-@keyframes pulse-purple 
+@keyframes pulse-yellow 
 {
-    0%, 100% {
+  0%, 100% 
+  {
     opacity: 1;
   }
-  50% {
+  50% 
+  {
     opacity: 0.5;
   }
 }
-.podglad 
+@keyframes pulse-purple 
 {
-  color: #888888;
-  font-size: 0.9rem;
-  margin-top: 4px;
-  min-height: 18px;
-  font-style: italic;
-}
-@media (max-width: 768px) 
-{
-  .konto-container 
+  0%, 100% 
   {
-    flex-direction: column;
+    opacity: 1;
   }
-  button.btn 
+  50% 
   {
-    flex: 1 1 100%;
+    opacity: 0.5;
   }
 }

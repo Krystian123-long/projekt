@@ -14,6 +14,11 @@ body {
   max-width: 1000px;
   width: 100%;
 }
+@media (max-width: 768px) {
+  .konto-container {
+    flex-direction: column;
+  }
+}
 
 .card {
   flex: 1;
@@ -45,17 +50,16 @@ form {
   flex-direction: column;
   gap: 15px;
 }
-
-.input-row {
+form .input-row {
   display: flex;
   gap: 10px;
   align-items: center;
 }
-.input-row label {
+form .input-row label {
   flex-shrink: 0;
   width: 60px;
 }
-.input-row input[type=text] {
+form .input-row input[type=text] {
   flex-grow: 1;
   border-radius: 10px;
   padding: 8px 12px;
@@ -65,17 +69,25 @@ form {
 
 .komunikat {
   min-height: 1.6rem;
+  height: 24px;
   font-size: 0.9rem;
   color: #555;
   text-align: center;
   margin-bottom: 10px;
-  height: 24px;
 }
 .komunikat.error {
   color: #dc3545;
 }
 .komunikat.success {
   color: #198754;
+}
+
+.podglad {
+  color: #888888;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  min-height: 18px;
+  font-style: italic;
 }
 
 .btn-group {
@@ -96,34 +108,40 @@ button.btn {
 button.btn:hover {
   filter: brightness(1.1);
 }
-
-.btn-success {
+button.btn.btn-success {
   background-color: #198754;
   color: white;
   border: none;
 }
-
-.btn-danger {
+button.btn.btn-danger {
   background-color: #dc3545;
   color: white;
   border: none;
 }
-
-.btn-primary {
+button.btn.btn-primary {
   background-color: #0d6efd;
   color: white;
   border: none;
 }
-
-.btn-info {
+button.btn.btn-info {
   background-color: #0dcaf0;
   color: white;
   border: none;
+}
+@media (max-width: 768px) {
+  button.btn {
+    flex: 1 1 100%;
+  }
 }
 
 .pulse-yellow {
   animation: pulse-yellow 2s infinite;
   color: #ffc107;
+}
+
+.pulse-purple {
+  animation: pulse-purple 2s infinite;
+  color: #6f42c1;
 }
 
 @keyframes pulse-yellow {
@@ -134,33 +152,12 @@ button.btn:hover {
     opacity: 0.5;
   }
 }
-.pulse-purple {
-  animation: pulse-purple 2s infinite;
-  color: #6f42c1;
-}
-
 @keyframes pulse-purple {
   0%, 100% {
     opacity: 1;
   }
   50% {
     opacity: 0.5;
-  }
-}
-.podglad {
-  color: #888888;
-  font-size: 0.9rem;
-  margin-top: 4px;
-  min-height: 18px;
-  font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .konto-container {
-    flex-direction: column;
-  }
-  button.btn {
-    flex: 1 1 100%;
   }
 }
 
