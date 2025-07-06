@@ -132,7 +132,7 @@ unset($_SESSION['last_action']);
     <link rel="stylesheet" href="my-app/src/index.css">  
 </head>
 
-<body>    
+<body> 
 <div class="konto-container">
     <div class="card">
     <h3 class="<?php echo ($last_action === 'wplata' || $last_action === 'wyplata') ? 'pulse-yellow' : ''; ?>">💰 Konto główne</h3>
@@ -174,7 +174,7 @@ unset($_SESSION['last_action']);
     <form method="post" id="formGlowny">
         <div class="input-row">
             <label for="kwota_glowna">Kwota:</label>
-            <input type="text" id="kwota_glowna" name="kwota" class="form-control" required>
+            <input type="text" id="kwota_glowna" name="kwota" class="form-control" autocomplete="off" required pattern="\d+" title="Podaj poprawną kwotę (liczba całkowita).">
         </div>
         <div id="podglad_kwota_glowna" class="podglad"></div>
         <div class="btn-group">
@@ -230,8 +230,9 @@ unset($_SESSION['last_action']);
 </form>
 </div>
 </div>
-
-<script> $(document).ready(function() 
+ 
+<script> 
+$(document).ready(function() 
 { 
     $('#kwota_glowna').on('input', function() 
     { 
@@ -260,6 +261,10 @@ unset($_SESSION['last_action']);
     }
 );
 }); 
+setTimeout(function() 
+{
+    $('.komunikat').fadeOut('slow');
+}, 3000);
 </script>
 
 <script>
@@ -302,7 +307,7 @@ unset($_SESSION['last_action']);
   });
 </script>
 </body> 
-</html>                                                                                                                                                                                                                                      
+</html>                                                                                                                                                                                                                                                                       
 
 
 
