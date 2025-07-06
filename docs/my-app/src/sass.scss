@@ -15,7 +15,6 @@ $color-primary: #0d6efd;
 $color-info: #0dcaf0;
 $color-warning: #ffc107;
 $color-purple: #6f42c1;
-$breakpoint-mobile: 768px;
 
 body 
 {
@@ -32,12 +31,7 @@ body
   display: flex;
   gap: 20px;
   max-width: 1000px;
-  width: 100%;
-
-  @media (max-width: $breakpoint-mobile) 
-  {
-    flex-direction: column;
-  }
+  width: 100%;  
 }
 .card 
 {
@@ -159,10 +153,6 @@ button.btn
     background-color: $color-info;
     color: white;
     border: none;
-  }
-  @media (max-width: $breakpoint-mobile) 
-  {
-    flex: 1 1 100%;
   }
 }
 .pulse-yellow 

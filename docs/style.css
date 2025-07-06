@@ -154,14 +154,4 @@ button.btn:hover
   min-height: 18px;
   font-style: italic;
 }
-@media (max-width: 768px) 
-{
-  .konto-container 
-  {
-    flex-direction: column;
-  }
-  button.btn 
-  {
-    flex: 1 1 100%;
-  }
-}
+

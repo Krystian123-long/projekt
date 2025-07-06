@@ -220,7 +220,7 @@ unset($_SESSION['last_action']);
 <form method="post" id="formOszczednosciowy">
     <div class="input-row">
         <label for="kwota_oszczednosci">Kwota:</label>
-        <input type="text" id="kwota_oszczednosci" name="kwota" autocomplete="off" required pattern="\d+" title="Podaj poprawną kwotę (liczba całkowita).">
+        <input type="text" id="kwota_oszczednosci" name="kwota" class="form-control" autocomplete="off" required pattern="\d+" title="Podaj poprawną kwotę (liczba całkowita).">
     </div>
     <div id="podglad_kwota_oszczednosci" class="podglad"></div>
     <div class="btn-group">
