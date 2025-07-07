@@ -163,12 +163,8 @@ unset($_SESSION['last_action']);
     <?php
         if ($komunikat && in_array($last_action, ['wplata', 'wyplata', 'error', 'na_oszczednosci', 'na_glowne'])) 
         {
-            echo htmlspecialchars($komunikat);
+            echo ($komunikat);
         } 
-        else 
-        {
-            echo "&nbsp;";
-        }
     ?>
 </div>
     <form method="post" id="formGlowny">
@@ -209,12 +205,8 @@ unset($_SESSION['last_action']);
     <?php
         if ($komunikat && in_array($last_action, ['na_oszczednosci', 'na_glowne', 'error'])) 
         {
-            echo htmlspecialchars($komunikat);
-        } 
-        else 
-        {
-            echo "&nbsp;";
-        }
+            echo ($komunikat);
+        }        
     ?>
 </div>
 <form method="post" id="formOszczednosciowy">
